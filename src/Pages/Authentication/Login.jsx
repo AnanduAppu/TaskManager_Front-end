@@ -17,8 +17,31 @@ const LoginUser = async(e)=>{
   const email = emailInput.current.value
   const password = passInput.current.value
   const data = await axios.post(`${api}/login`,{email,password },{withCredentials:true})
-
   console.log(data)
+}
+
+
+const loginUser = useMutation({
+  mutationFn:async(userData)=>{
+    const {email,password} = userData
+    const result = await axios.post(`${api}/login`,{email,password },{withCredentials:true})
+    return result.data
+  },
+  onSuccess: (data) => {
+    if (data.success) {
+      alert("login successful!");
+    }
+  },
+})
+
+const loginSubmit = (e)=>{
+
+    e.preventDefault();
+    const email = emailInput.current.value
+    const password = passInput.current.value
+    const userData = {email,password}
+
+    loginUser.mutate(userData)
 }
 
   const navigate = useNavigate();
@@ -62,7 +85,7 @@ const LoginUser = async(e)=>{
           <button
             type="submit"
             className="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onClick={(e)=>LoginUser(e)}
+            onClick={(e)=>loginSubmit(e)}
           >
             Login
           </button>
