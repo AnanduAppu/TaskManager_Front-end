@@ -1,45 +1,61 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import axios from "axios";
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import userContext from "../../contex/UserContex";
+
 
 const Signup = () => {
   const nameRef = useRef();
   const passwordRef = useRef();
   const confirmRef = useRef();
   const maildRef = useRef();
+const api = useContext(userContext)
+  const [visibilityOf, setVisibilityOf] = useState(false);
+console.log(api)
+  // Mutation for signing up the user
+  const mutation = useMutation({
+    mutationFn: async (userData) => {
+      const result = await axios.post(
+        `${api}/signup`,
+        userData
+      );
+      return result.data;
+    },
+    onSuccess: (data) => {
+      if (data.success) {
+        alert("Signup successful!");
+      }
+    },
+    onError: (error) => {
+      console.error("Signup error:", error);
+      if (error.response && error.response.status === 409) {
+        alert("User already exists. Please use a different email.");
+      } else {
+        alert("An error occurred during signup. Please try again.");
+      }
+    },
+  });
 
-  const [visibilityOf, SetVisibilityOf] = useState(false);
-
-  const functionSubmit = async (e) => {
+  const functionSubmit = (e) => {
     e.preventDefault();
 
     if (passwordRef.current.value !== confirmRef.current.value) {
       return alert("Password not matching");
     }
-    const name = nameRef.current.value;
-    const email = maildRef.current.value;
-    const password = passwordRef.current.value;
+
     const userData = {
-      name,
-      password,
-      email,
+      name: nameRef.current.value,
+      email: maildRef.current.value,
+      password: passwordRef.current.value,
     };
-    try {
-      const result = await axios.post(
-        "http://localhost:3005/user/signup",
-        userData
-      );
 
-      if (result.data.sccess) {
-        alert("login success");
-      }
-    } catch (error) {}
-
-    try {
-    } catch (error) {}
+    // Call mutation to post the data
+    mutation.mutate(userData);
   };
+
   return (
     <form className="flex items-center justify-center mt-20 bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md">
@@ -58,20 +74,18 @@ const Signup = () => {
               ref={nameRef}
               required
             />
-            <p className="my-2"></p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Email
             </label>
             <input
-              type="mail"
+              type="email"
               placeholder="your@mail"
               className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               ref={maildRef}
               required
             />
-            <p className="my-2"></p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -89,7 +103,7 @@ const Signup = () => {
                 className="p-2"
                 onClick={(e) => {
                   e.preventDefault();
-                  SetVisibilityOf((prev) => !prev);
+                  setVisibilityOf((prev) => !prev);
                 }}
               >
                 {visibilityOf ? <Visibility /> : <VisibilityOff />}
@@ -101,7 +115,7 @@ const Signup = () => {
               Confirm Password
             </label>
             <input
-              type="password"
+              type="text"
               placeholder="Confirm Password"
               className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               ref={confirmRef}
@@ -112,13 +126,13 @@ const Signup = () => {
         <button
           type="submit"
           className="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onClick={(e) => functionSubmit(e)}
+          onClick={functionSubmit}
         >
           Sign Up
         </button>
         <p className="text-center text-sm text-gray-600">
           Already have an account?{" "}
-          <Link to={"/"} className="text-blue-500 hover:underline">
+          <Link to={"/login"} className="text-blue-500 hover:underline">
             Login
           </Link>
         </p>

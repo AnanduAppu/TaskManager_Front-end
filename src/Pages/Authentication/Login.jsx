@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 function Login() {
+
+  const emailInput = useRef()
+  const passInput = useRef()
 
     const navigate = useNavigate()
   return (

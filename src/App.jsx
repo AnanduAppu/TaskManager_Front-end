@@ -12,14 +12,12 @@ import UseReducer from './Hools/UseReducer';
 import LandingAssemble from './Pages/Ladingpage/LandingAssemble';
 function App() {
 
-const [value,setValue] = useState('')
 
-const data={
-  value,setValue
-}
+const api = 'http://localhost:3005/user'
+
   return (
     <>
-    <userContext.Provider value={data}>
+    <userContext.Provider value={api}>
     <div className='bg-gray-100  h-screen'>
     <Navbar/>
     <Routes>
