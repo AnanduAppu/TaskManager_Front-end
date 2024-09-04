@@ -32,6 +32,16 @@ const loginUser = useMutation({
       alert("login successful!");
     }
   },
+  onError: (error) => {
+    console.error("Signup error:", error);
+    if (error.response && error.response.status === 404) {
+      alert("User not exist");
+    } else if(error.response && error.response.status === 408) {
+      alert("check Your Password.");
+    }else{
+      alert("An error occured");
+    }
+  },
 })
 
 const loginSubmit = (e)=>{
